@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Long> {
     Optional<File> findByApplicationId(Long applicationId);
+
+    File getFilesById(Long id);
 }
