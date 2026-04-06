@@ -20,11 +20,11 @@ public class JwtUtil {
 
     public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(email)           // кладём email в токен
-                .setIssuedAt(new Date())     // когда создан
-                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // когда истекает
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // подписываем
-                .compact();                  // собираем в строку
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String extractEmail(String token) {
@@ -33,7 +33,7 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject();  // достаём email
+                .getSubject();
     }
 
     public boolean isTokenExpired(String token) {
@@ -49,6 +49,10 @@ public class JwtUtil {
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 }
 
