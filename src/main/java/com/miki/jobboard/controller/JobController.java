@@ -1,9 +1,12 @@
 package com.miki.jobboard.controller;
 
 import com.miki.jobboard.entity.Job;
+import com.miki.jobboard.entity.User;
+import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.service.JobService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +16,11 @@ import java.util.List;
 public class JobController {
 
     private final JobService jobService;
+    private final UserRepository userRepository;
 
-    public JobController(JobService jobService) {
+    public JobController(JobService jobService, UserRepository userRepository) {
         this.jobService = jobService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -29,7 +34,11 @@ public class JobController {
     }
 
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody Job job) {
+    public ResponseEntity<Job> createJob(@RequestBody Job job, Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        job.setUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(jobService.createJob(job));
     }
 
