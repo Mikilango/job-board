@@ -1,7 +1,10 @@
 package com.miki.jobboard.controller;
 
+import com.miki.jobboard.dto.JobRequestDTO;
+import com.miki.jobboard.dto.JobResponseDTO;
 import com.miki.jobboard.entity.Job;
 import com.miki.jobboard.entity.User;
+import com.miki.jobboard.mapper.JobMapper;
 import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.service.JobService;
 import org.springframework.http.HttpStatus;
@@ -17,35 +20,43 @@ public class JobController {
 
     private final JobService jobService;
     private final UserRepository userRepository;
+    private final JobMapper jobMapper;
 
-    public JobController(JobService jobService, UserRepository userRepository) {
+    public JobController(JobService jobService, UserRepository userRepository, JobMapper jobMapper) {
         this.jobService = jobService;
         this.userRepository = userRepository;
+        this.jobMapper = jobMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Job>> getAllJobs() {
-        return ResponseEntity.ok(jobService.getAllJobs());
+    public ResponseEntity<List<JobResponseDTO>> getAllJobs() {
+        return ResponseEntity.ok(jobService.getAllJobs()
+                .stream()
+                .map(jobMapper::toJobResponseDTO)
+                .toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> getJobById(@PathVariable Long id) {
-        return ResponseEntity.ok(jobService.getJobById(id));
+    public ResponseEntity<JobResponseDTO> getJobById(@PathVariable Long id) {
+        return ResponseEntity.ok(jobMapper.toJobResponseDTO(jobService.getJobById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<Job> createJob(@RequestBody Job job, Authentication authentication) {
+    public ResponseEntity<JobResponseDTO> createJob(@RequestBody JobRequestDTO jobRequestDTO, Authentication authentication) {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        Job job = jobMapper.toEntity(jobRequestDTO);
         job.setUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobService.createJob(job));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(jobMapper.toJobResponseDTO(jobService.createJob(job)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job job) {
+    public ResponseEntity<JobResponseDTO> updateJob(@PathVariable Long id, @RequestBody JobRequestDTO jobRequestDTO) {
+        Job job = jobMapper.toEntity(jobRequestDTO);
         job.setId(id);
-        return ResponseEntity.ok(jobService.updateJob(job));
+        return ResponseEntity.ok(jobMapper.toJobResponseDTO(jobService.updateJob(job)));
     }
 
     @DeleteMapping("/{id}")
