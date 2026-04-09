@@ -1,6 +1,8 @@
 package com.miki.jobboard.service.impl;
 
 import com.miki.jobboard.entity.Job;
+import com.miki.jobboard.exception.BadRequestException;
+import com.miki.jobboard.exception.ResourceNotFoundException;
 import com.miki.jobboard.repository.JobRepository;
 import com.miki.jobboard.service.JobService;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public Job getJobById(Long id) {
         return jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
     }
 
     @Override
@@ -35,7 +37,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public Job updateJob(Job job) {
         if (!jobRepository.existsById(job.getId())) {
-            throw new RuntimeException("Job does not exist");
+            throw new ResourceNotFoundException("Job does not exist");
         }
         return jobRepository.save(job);
     }
@@ -43,7 +45,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
-            throw new RuntimeException("Job does not exist");
+            throw new ResourceNotFoundException("Job does not exist");
         }
         jobRepository.deleteById(id);
     }

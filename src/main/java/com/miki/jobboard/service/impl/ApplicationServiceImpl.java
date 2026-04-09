@@ -2,6 +2,7 @@ package com.miki.jobboard.service.impl;
 
 import com.miki.jobboard.entity.Application;
 import com.miki.jobboard.entity.ApplicationStatus;
+import com.miki.jobboard.exception.ResourceNotFoundException;
 import com.miki.jobboard.repository.ApplicationRepository;
 import com.miki.jobboard.service.ApplicationService;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public Application getApplicationById(Long id) {
         return applicationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
     }
 
     @Override
@@ -47,7 +48,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public void deleteApplication(Long id) {
         if (!applicationRepository.existsById(id)) {
-            throw new RuntimeException("Application not found");
+            throw new ResourceNotFoundException("Application not found");
         }
         applicationRepository.deleteById(id);
 

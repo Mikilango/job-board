@@ -1,6 +1,8 @@
 package com.miki.jobboard.service.impl;
 
 import com.miki.jobboard.entity.User;
+import com.miki.jobboard.exception.BadRequestException;
+import com.miki.jobboard.exception.ResourceNotFoundException;
 import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.service.UserService;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(User user) {
         if (userRepository.existsByEmail(user.getEmail()))
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists");
         userRepository.save(user);
         return user;
     }
@@ -27,13 +29,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Override
