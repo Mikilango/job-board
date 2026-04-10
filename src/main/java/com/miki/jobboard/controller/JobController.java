@@ -64,4 +64,12 @@ public class JobController {
         jobService.deleteJob(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<JobResponseDTO>> searchJobs(@RequestParam String query) {
+        return ResponseEntity.ok(jobService.searchJobs(query)
+                .stream()
+                .map(jobMapper::toJobResponseDTO)
+                .toList());
+    }
 }

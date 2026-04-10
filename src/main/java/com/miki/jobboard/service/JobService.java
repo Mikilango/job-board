@@ -14,4 +14,6 @@ public interface JobService {
     Job updateJob(Job job);
 
     void deleteJob(Long id);
+
+    List<Job> searchJobs(String query);
 }

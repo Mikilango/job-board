@@ -1,7 +1,6 @@
 package com.miki.jobboard.service.impl;
 
 import com.miki.jobboard.entity.Job;
-import com.miki.jobboard.exception.BadRequestException;
 import com.miki.jobboard.exception.ResourceNotFoundException;
 import com.miki.jobboard.repository.JobRepository;
 import com.miki.jobboard.service.JobService;
@@ -48,6 +47,11 @@ public class JobServiceImpl implements JobService {
             throw new ResourceNotFoundException("Job does not exist");
         }
         jobRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Job> searchJobs(String query) {
+        return jobRepository.searchJobs(query);
     }
 
 }
