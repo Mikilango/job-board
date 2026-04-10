@@ -1,8 +1,10 @@
 package com.miki.jobboard.controller;
 
+import com.miki.jobboard.dto.FileResponseDTO;
 import com.miki.jobboard.entity.Application;
 import com.miki.jobboard.entity.File;
 import com.miki.jobboard.exception.ResourceNotFoundException;
+import com.miki.jobboard.mapper.FileMapper;
 import com.miki.jobboard.repository.ApplicationRepository;
 import com.miki.jobboard.service.FileService;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,27 +25,29 @@ public class FileController {
 
     private final FileService fileService;
     private final ApplicationRepository applicationRepository;
+    private final FileMapper fileMapper;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public FileController(FileService fileService, ApplicationRepository applicationRepository) {
+    public FileController(FileService fileService, ApplicationRepository applicationRepository, FileMapper fileMapper) {
         this.fileService = fileService;
         this.applicationRepository = applicationRepository;
+        this.fileMapper = fileMapper;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<File> getFileById(@PathVariable Long id) {
-        return ResponseEntity.ok(fileService.getFileById(id));
+    public ResponseEntity<FileResponseDTO> getFileById(@PathVariable Long id) {
+        return ResponseEntity.ok(fileMapper.toFileResponseDTO(fileService.getFileById(id)));
     }
 
     @GetMapping("/application/{applicationId}")
-    public ResponseEntity<File> getFileByApplicationId(@PathVariable Long applicationId) {
-        return ResponseEntity.ok(fileService.getFileByApplicationId(applicationId));
+    public ResponseEntity<FileResponseDTO> getFileByApplicationId(@PathVariable Long applicationId) {
+        return ResponseEntity.ok(fileMapper.toFileResponseDTO(fileService.getFileByApplicationId(applicationId)));
     }
 
     @PostMapping
-    public ResponseEntity<File> uploadFile(
+    public ResponseEntity<FileResponseDTO> uploadFile(
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam Long applicationId) throws IOException {
 
@@ -66,7 +70,7 @@ public class FileController {
         file.setApplication(application);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(fileService.uploadFile(file));
+                .body(fileMapper.toFileResponseDTO(fileService.uploadFile(file)));
     }
 
     @DeleteMapping("/{id}")
