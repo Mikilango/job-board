@@ -2,6 +2,7 @@ package com.miki.jobboard.controller;
 
 import com.miki.jobboard.dto.JobRequestDTO;
 import com.miki.jobboard.dto.JobResponseDTO;
+import com.miki.jobboard.dto.JobUpdateDTO;
 import com.miki.jobboard.entity.Job;
 import com.miki.jobboard.entity.User;
 import com.miki.jobboard.mapper.JobMapper;
@@ -54,8 +55,8 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobResponseDTO> updateJob(@PathVariable Long id, @Valid @RequestBody JobRequestDTO jobRequestDTO) {
-        Job job = jobMapper.toEntity(jobRequestDTO);
+    public ResponseEntity<JobResponseDTO> updateJob(@PathVariable Long id, @Valid @RequestBody JobUpdateDTO jobUpdateDTO) {
+        Job job = jobMapper.toEntity(jobUpdateDTO);
         job.setId(id);
         return ResponseEntity.ok(jobMapper.toJobResponseDTO(jobService.updateJob(job)));
     }
