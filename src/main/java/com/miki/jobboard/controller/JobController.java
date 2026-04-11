@@ -7,6 +7,7 @@ import com.miki.jobboard.entity.User;
 import com.miki.jobboard.mapper.JobMapper;
 import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.service.JobService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,7 +43,7 @@ public class JobController {
     }
 
     @PostMapping
-    public ResponseEntity<JobResponseDTO> createJob(@RequestBody JobRequestDTO jobRequestDTO, Authentication authentication) {
+    public ResponseEntity<JobResponseDTO> createJob(@Valid @RequestBody JobRequestDTO jobRequestDTO, Authentication authentication) {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -53,7 +54,7 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobResponseDTO> updateJob(@PathVariable Long id, @RequestBody JobRequestDTO jobRequestDTO) {
+    public ResponseEntity<JobResponseDTO> updateJob(@PathVariable Long id, @Valid @RequestBody JobRequestDTO jobRequestDTO) {
         Job job = jobMapper.toEntity(jobRequestDTO);
         job.setId(id);
         return ResponseEntity.ok(jobMapper.toJobResponseDTO(jobService.updateJob(job)));
