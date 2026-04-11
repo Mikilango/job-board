@@ -3,6 +3,7 @@ package com.miki.jobboard.controller;
 import com.miki.jobboard.dto.AuthRequest;
 import com.miki.jobboard.dto.AuthResponse;
 import com.miki.jobboard.entity.User;
+import com.miki.jobboard.exception.BadRequestException;
 import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.security.JwtUtil;
 import jakarta.validation.Valid;
@@ -32,6 +33,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody AuthRequest authRequest) {
         if (userRepository.findByEmail(authRequest.getEmail()).isPresent()) {
             throw new RuntimeException("Пользователь уже существует!");
+        }
+        if (authRequest.getRole() == null) {
+            throw new BadRequestException("Роль не должна быть пустой");
         }
 
         var user = new User();

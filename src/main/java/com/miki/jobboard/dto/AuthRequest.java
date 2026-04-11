@@ -20,6 +20,5 @@ public class AuthRequest {
     @Pattern(regexp = ".*[A-Z].*", message = "Пароль должен содержать хотя бы одну заглавную букву")
     private String password;
 
-    @NotNull(message = "Роль не должна быть пустой")
     private Role role;
 }
