@@ -2,8 +2,13 @@ package com.miki.jobboard.service.impl;
 
 import com.miki.jobboard.entity.Job;
 import com.miki.jobboard.exception.ResourceNotFoundException;
+import com.miki.jobboard.mapper.JobMapper;
 import com.miki.jobboard.repository.JobRepository;
 import com.miki.jobboard.service.JobService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +17,11 @@ import java.util.List;
 public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
+    private final JobMapper jobMapper;
 
-    public JobServiceImpl(JobRepository jobRepository) {
+    public JobServiceImpl(JobRepository jobRepository, JobMapper jobMapper) {
         this.jobRepository = jobRepository;
+        this.jobMapper = jobMapper;
     }
 
     @Override
@@ -52,6 +59,12 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<Job> searchJobs(String query) {
         return jobRepository.searchJobs(query);
+    }
+
+    @Override
+    public Page<Job> getAllJobsPaged(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return jobRepository.findAll(pageable);
     }
 
 }

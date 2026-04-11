@@ -9,6 +9,7 @@ import com.miki.jobboard.mapper.JobMapper;
 import com.miki.jobboard.repository.UserRepository;
 import com.miki.jobboard.service.JobService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -73,5 +74,14 @@ public class JobController {
                 .stream()
                 .map(jobMapper::toJobResponseDTO)
                 .toList());
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<JobResponseDTO>> getAllJobsPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy) {
+        return ResponseEntity.ok(jobService.getAllJobsPaged(page, size, sortBy)
+                .map(jobMapper::toJobResponseDTO));
     }
 }
